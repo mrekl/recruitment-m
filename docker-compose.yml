@@ -1,0 +1,34 @@
+version: "3.5"
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: video-service
+        container_name: app
+        restart: unless-stopped
+        tty: true
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+            - ./storage:/var/www/storage
+        networks:
+            - app-network
+
+    webserver:
+        image: nginx:alpine
+        container_name: webserver
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "8000:80"
+        volumes:
+            - ./:/var/www
+            - ./nginx:/etc/nginx/conf.d
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
